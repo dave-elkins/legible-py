@@ -175,3 +175,93 @@ class TestCliEntryPoint:
         captured = capsys.readouterr()
         result = json.loads(captured.out)
         assert result["status"] == 404
+
+
+class TestAppEndpoints:
+    """Integration tests hitting the FastAPI app via TestClient."""
+
+    @staticmethod
+    def _check_deps():
+        try:
+            import fastapi  # noqa: F401
+            import httpx  # noqa: F401
+        except ImportError:
+            pytest.skip("requires legible-py[web] (fastapi + httpx)")
+
+    @staticmethod
+    def _fresh_app():
+        import importlib
+        import examples.petstore.app as petstore_app
+        importlib.reload(petstore_app)
+        return petstore_app.app
+
+    @pytest.fixture(autouse=True)
+    def _reset_env(self):
+        os.environ["LEGIBLE_DB"] = ":memory:"
+
+    def test_purchase_success(self):
+        self._check_deps()
+        app = self._fresh_app()
+        from fastapi.testclient import TestClient
+
+        with TestClient(app) as client:
+            resp = client.post(
+                "/purchase",
+                json={"pet_id": "pet_1", "customer_id": "alice"},
+            )
+        assert resp.status_code == 200
+        data = resp.json()
+        assert data["status"] == 200
+        assert "receipt" in data
+
+    def test_purchase_out_of_stock(self):
+        self._check_deps()
+        app = self._fresh_app()
+        from fastapi.testclient import TestClient
+
+        with TestClient(app) as client:
+            resp = client.post(
+                "/purchase",
+                json={"pet_id": "pet_2", "customer_id": "bob"},
+            )
+        assert resp.status_code == 404
+        assert "out of stock" in resp.json()["detail"]["message"]
+
+    def test_purchase_infrastructure_error(self):
+        self._check_deps()
+        app = self._fresh_app()
+        from fastapi.testclient import TestClient
+
+        with TestClient(app) as client:
+            resp = client.post(
+                "/purchase",
+                json={"pet_id": "pet_3", "customer_id": "charlie"},
+            )
+        assert resp.status_code == 500
+        assert "Database cluster unreachable" in resp.text
+
+    def test_trace_unknown_token(self):
+        self._check_deps()
+        app = self._fresh_app()
+        from fastapi.testclient import TestClient
+
+        with TestClient(app) as client:
+            resp = client.get("/trace/unknown_flow")
+        assert resp.status_code == 200
+        data = resp.json()
+        assert data["flow_token"] == "unknown_flow"
+
+    def test_llm_endpoint_returns_accepted(self):
+        self._check_deps()
+        app = self._fresh_app()
+        from fastapi.testclient import TestClient
+
+        with TestClient(app) as client:
+            resp = client.post(
+                "/llm/response",
+                json={"conversation_id": "conv_1", "text": "recommendation"},
+            )
+        assert resp.status_code == 200
+        data = resp.json()
+        assert data["status"] == "accepted"
+        assert len(data["flow_token"]) > 0
