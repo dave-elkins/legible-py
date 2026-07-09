@@ -38,6 +38,8 @@ test = [
     "pytest>=7.0.0",
     "pytest-asyncio>=0.21.0",
     "ruff>=0.1.0",
+    "mypy>=1.0.0",
+    "pre-commit>=3.0.0",
 ]
 dev = [
     "legible-py[web,test]",
@@ -70,3 +72,11 @@ select = ["E", "F", "I", "N", "W"]
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
 testpaths = ["tests"]
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+disallow_untyped_defs = true
+ignore_missing_imports = true
+warn_unused_ignores = true
+exclude = ["examples/"]
