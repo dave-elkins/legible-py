@@ -2,7 +2,7 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE.md)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](pyproject.toml)
-![Tests](https://img.shields.io/badge/tests-141%20passing-brightgreen)
+![Tests](https://img.shields.io/badge/tests-146%20passing-brightgreen)
 
 A Python implementation of the **WYSIWID** (What You See Is What It Does)
 sync engine for **Concept Design**, based on Meng & Jackson's
@@ -116,7 +116,7 @@ lgbl trace --list --db legible.db
 |---|---|---|
 | `legible.engine` | `Sync`, `ActionPattern`, `Var`, `AppDispatcher`, `SyncEngine` | Sync engine core |
 | `legible.engine` | `FlowGateway`, `HttpTrigger`, `CliTrigger`, `AsyncLlmTrigger` | Entry points & flows |
-| `legible.engine` | `PureFunctionDispatcher`, `InMemoryStateStore` | Pure function variant |
+| `legible.engine` | `PureFunctionDispatcher`, `ConceptStateStore`, `InMemoryStateStore`, `SqliteStateStore` | Pure function variant |
 | `legible.engine` | `InMemoryFlowStore`, `SQLiteFlowStore` | Storage backends |
 | `legible.linter` | `lint_file`, `lint_source`, `LinterConfig` | Static analysis (5 rules) |
 | `legible.trace` | `build_trace`, `render_tree`, `render_json` | Flow visualisation |
@@ -133,7 +133,12 @@ lgbl trace --list --db legible.db
 
 ---
 
-## Running the Pet Store
+## Examples
+
+### Pet Store (async concepts)
+
+Full FastAPI application demonstrating the standard async engine with
+`AppDispatcher`, `HttpTrigger`, and six purchase sync rules.
 
 ```bash
 cd examples/petstore
@@ -144,6 +149,19 @@ curl -X POST http://localhost:8000/purchase \
   -H 'Content-Type: application/json' \
   -d '{"pet_id":"pet_1","customer_id":"alice"}'
 ```
+
+See [examples/petstore/README.md](examples/petstore/README.md).
+
+### Pure Function Concepts
+
+Deterministic, stateful variant using synchronous functions with
+`PureFunctionDispatcher`. Same sync rules, no async, no I/O.
+
+```bash
+python -m pytest tests/test_pure_storage.py --asyncio-mode=auto -v
+```
+
+See [examples/concepts_pure/README.md](examples/concepts_pure/README.md).
 
 ---
 
