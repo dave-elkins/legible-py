@@ -1,5 +1,30 @@
+# Byte-compiled
 __pycache__/
 *.py[cod]
-*.egg-info/
+*$py.class
+
+# Virtual environment
 .venv/
+venv/
+env/
+
+# Distribution / packaging
+*.egg-info/
+*.egg
+dist/
+build/
+*.whl
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Project
 legible.db
