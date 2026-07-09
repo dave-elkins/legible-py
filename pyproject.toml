@@ -44,7 +44,7 @@ dev = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/anomalyco/legible-py"
+Homepage = "https://github.com/dave-elkins/legible-py"
 Documentation = "https://legible-py.readthedocs.io"
 
 [project.scripts]
