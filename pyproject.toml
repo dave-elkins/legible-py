@@ -1,0 +1,72 @@
+[build-system]
+requires = ["hatchling>=1.0.0"]
+build-backend = "hatchling.build"
+
+[project]
+name = "legible-py"
+version = "0.1.0"
+description = "A Python implementation of the WYSIWID sync engine for Concept Design"
+readme = "README.md"
+requires-python = ">=3.11"
+license = {text = "MIT"}
+authors = [
+    {name = "LegiblePy Contributors"},
+]
+keywords = ["wysiwid", "concept-design", "sync-engine", "architecture"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+]
+
+dependencies = [
+    "aiosqlite>=0.20.0",
+    "typing-extensions>=4.0.0",
+    "typer>=0.9.0",
+]
+
+[project.optional-dependencies]
+web = [
+    "fastapi>=0.100.0",
+    "uvicorn>=0.20.0",
+    "pydantic>=2.0.0",
+]
+test = [
+    "pytest>=7.0.0",
+    "pytest-asyncio>=0.21.0",
+    "ruff>=0.1.0",
+]
+dev = [
+    "legible-py[web,test]",
+]
+
+[project.urls]
+Homepage = "https://github.com/anomalyco/legible-py"
+Documentation = "https://legible-py.readthedocs.io"
+
+[project.scripts]
+lgbl = "legible_cli.main:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/legible", "src/legible_cli"]
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "/src",
+    "/examples",
+    "/tests",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "W"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
