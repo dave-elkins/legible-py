@@ -1,3 +1,3 @@
-from src.legible import engine
+from . import engine
 
 __all__ = ["engine"]
